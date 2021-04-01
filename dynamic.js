@@ -13,6 +13,19 @@ module.exports = function (fastify, opts, next) {
     routes.push(routeOptions)
   })
 
+  opts = opts || [{}]
+
+  const setupFns =
+  opts.map((subopts, idx) => makeSetupFn(subopts, idx, fastify, routes, next))
+
+  function swagger (opts, idx) {
+    return setupFns[idx || 0](opts)
+  }
+
+  next()
+}
+
+function makeSetupFn (opts, idx, fastify, routes, next) {
   opts = opts || {}
 
   opts.swagger = opts.swagger || {}
@@ -40,7 +53,7 @@ module.exports = function (fastify, opts, next) {
     swaggerString: null
   }
 
-  function swagger (opts) {
+  return function (opts) {
     if (opts && opts.yaml) {
       if (cache.swaggerString) return cache.swaggerString
     } else {
@@ -92,14 +105,15 @@ module.exports = function (fastify, opts, next) {
       const schema = transform
         ? transform(route.schema)
         : route.schema
+
       if (schema && schema.hide) {
         continue
       }
-      
+
       let path = route.url.startsWith(basePath)
         ? route.url.replace(basePath, '')
         : route.url
-      
+
       if (!path.startsWith('/')) {
         path = '/' + path
       }
@@ -192,8 +206,6 @@ module.exports = function (fastify, opts, next) {
     cache.swaggerObject = swaggerObject
     return swaggerObject
   }
-
-  next()
 }
 
 function consumesFormOnly (schema) {
