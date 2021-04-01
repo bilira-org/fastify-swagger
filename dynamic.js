@@ -45,7 +45,7 @@ function makeSetupFn (opts, idx, fastify, routes, next) {
 
   if (opts.exposeRoute === true) {
     const prefix = opts.routePrefix || '/documentation'
-    fastify.register(require('./routes'), { prefix })
+    fastify.register(require('./routes'), {prefix, conf_idx: idx})
   }
 
   const cache = {
