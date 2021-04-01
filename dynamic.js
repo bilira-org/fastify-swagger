@@ -16,7 +16,7 @@ module.exports = function (fastify, opts, next) {
   opts = opts || [{}]
 
   const setupFns =
-  opts.map((subopts, idx) => makeSetupFn(subopts, idx, fastify, routes, next))
+    opts.map((subopts, idx) => makeSetupFn(subopts, idx, fastify, routes, next))
 
   function swagger (opts, idx) {
     return setupFns[idx || 0](opts)
