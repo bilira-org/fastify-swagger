@@ -89,16 +89,17 @@ module.exports = function (fastify, opts, next) {
 
     swaggerObject.paths = {}
     for (var route of routes) {
-      if (route.schema && route.schema.hide) {
-        continue
-      }
-
       const schema = transform
         ? transform(route.schema)
         : route.schema
+      if (schema && schema.hide) {
+        continue
+      }
+      
       let path = route.url.startsWith(basePath)
         ? route.url.replace(basePath, '')
         : route.url
+      
       if (!path.startsWith('/')) {
         path = '/' + path
       }
